@@ -42,7 +42,7 @@ def create_user(Session,username,password,creator):
 	s=Session
 	user=get_user(s,username)
 	if user is None:
-		u=User(name=username,password=genpw(password),creator=creator)
+		u=User(name=username,password=genpw(password),creator=creator.id)
 		s.add(u)
 		s.commit()
 		return True
