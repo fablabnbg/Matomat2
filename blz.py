@@ -1,5 +1,20 @@
 import struct
 
+def check_iban(iban):
+	if iban[:2].upper()!='DE':
+		raise ValueError('Only german IBANs are supported')
+	r=str(98-int(iban[4:]+'131400')%97)
+	if len(r)<2:
+		r='0'+r
+	return iban[2:4]==r
+
+
+def from_iban(iban):
+	if iban[:2].upper()!='DE':
+		raise ValueError('Only german IBANs are supported')
+	blz=iban[4:12]
+	return blz
+
 class BLZfile(object):
 	def __init__(self, filename):
 		self.cache=dict()
