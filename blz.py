@@ -1,6 +1,7 @@
 import struct
 
 def check_iban(iban):
+	iban=iban.replace(' ','')
 	if iban[:2].upper()!='DE':
 		raise ValueError('Only german IBANs are supported')
 	r=str(98-int(iban[4:]+'131400')%97)
@@ -10,6 +11,7 @@ def check_iban(iban):
 
 
 def from_iban(iban):
+	iban=iban.replace(' ','')
 	if iban[:2].upper()!='DE':
 		raise ValueError('Only german IBANs are supported')
 	blz=iban[4:12]
