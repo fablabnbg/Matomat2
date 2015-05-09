@@ -42,7 +42,8 @@ class matomat(object):
 		money_out=sum((x.amount for x in self.session.query(db.Sale).filter(db.Sale.user==self._user)))
 		transfers_in=sum((x.amount for x in self.session.query(db.Transfer).filter(db.Transfer.recipient==self._user)))
 		transfers_out=sum((x.amount for x in self.session.query(db.Transfer).filter(db.Transfer.sender==self._user)))
-		res=money_in-money_out+transfers_in-transfers_out
+		sepa_in=sum((x.amount for x in self.session.query(db.PaySepa).filter(db.PaySepa.user==self._user)))
+		res=money_in-money_out+transfers_in-transfers_out+sepa_in
 		return res
 
 	@require_auth
@@ -51,9 +52,10 @@ class matomat(object):
 		money_out=self.session.query(db.Sale).filter(db.Sale.user==self._user).all()
 		transfers_in=self.session.query(db.Transfer).filter(db.Transfer.recipient==self._user).all()
 		transfers_out=self.session.query(db.Transfer).filter(db.Transfer.sender==self._user).all()
+		sepa_in=self.session.query(db.PaySepa).filter(db.PaySepa.user==self._user).all()
 		for m in transfers_out:
 			m.amount*=-1
-		money=sorted(money_in+money_out+transfers_in+transfers_out,key=lambda x:x.time,reverse=True)
+		money=sorted(money_in+money_out+transfers_in+transfers_out+sepa_in,key=lambda x:x.time,reverse=True)
 		data=[]
 		for m in money:
 			d={"amount":m.amount,"time":m.time.isoformat()}
