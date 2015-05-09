@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, func
+from sqlalchemy import Column, ForeignKey, Integer, String, Boolean, DateTime, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy import create_engine
@@ -12,6 +12,7 @@ class User(Base):
 	password=Column(String(128))
 	creator=Column(Integer,nullable=True)
 	iban=Column(String(34),nullable=True)
+	right_accountant=Column(Boolean, default=False)
 
 class Item(Base):
 	__tablename__='items'
@@ -31,6 +32,14 @@ class Sale(Base):
 
 class Pay(Base):
 	__tablename__='pays'
+	id=Column(Integer,primary_key=True)
+	user_id=Column(Integer,ForeignKey('users.id'))
+	amount=Column(Integer)
+	time=Column(DateTime, default=func.now())
+	user=relationship('User')
+
+class PaySepa(Base):
+	__tablename__='payssepa'
 	id=Column(Integer,primary_key=True)
 	user_id=Column(Integer,ForeignKey('users.id'))
 	amount=Column(Integer)
