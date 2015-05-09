@@ -12,7 +12,7 @@ class User(Base):
 	password=Column(String(128))
 	creator=Column(Integer,nullable=True)
 	iban=Column(String(34),nullable=True)
-	max_sepa_amount=Column(Integer, default=50)
+	max_sepa_amount=Column(Integer, default=5000)
 	right_accountant=Column(Boolean, default=False)
 
 class Item(Base):
