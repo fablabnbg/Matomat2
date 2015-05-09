@@ -57,8 +57,8 @@ class BLZrecord(object):
 		self.leading=data[1]==b'1'
 		self.name=data[2].decode('cp1252')
 		self.plz=data[3].decode('ascii')
-		self.city=data[4]
-		self.shortname=data[5]
+		self.city=data[4].decode('cp1252')
+		self.shortname=data[5].decode('cp1252')
 		self.pan=data[6]
 		self.bic=data[7].decode('ascii')
 
