@@ -91,7 +91,7 @@ class matomat(object):
 			month-=12
 			year+=1
 		time1=datetime(year,month,1)
-		data=session.query(db.PaySepa).filter(db.PaySepa.time>=time0, db.PaySepa.time<time1).all()
+		data=self.session.query(db.PaySepa).filter(db.PaySepa.time>=time0, db.PaySepa.time<time1).all()
 		return sepa.create_debit_file(data)
 	
 	@require_auth
