@@ -112,7 +112,18 @@ matomatControllers.controller('balanceCtrl', ['$scope', '$http', '$location', 'a
 				var url="api/"+$scope.user+"/pay";
 				$http.post(url,amount*100,{headers:{pass:$scope.pass}})
 				.success(function(data){
-					$scope.message=""+amount+"EUR eingezahlt";
+					$scope.message=""+amount+" EUR eingezahlt";
+					$scope.loadBalance();
+				})
+				.error(function(data){
+					$scope.message="Einzahlen fehlgeschlagen";
+				});
+			};
+			$scope.paysepa=function(amount){
+				var url="api/"+$scope.user+"/paysepa";
+				$http.post(url,amount*100,{headers:{pass:$scope.pass}})
+				.success(function(data){
+					$scope.message=""+amount+" EUR per Lastschrift eingezahlt";
 					$scope.loadBalance();
 				})
 				.error(function(data){
