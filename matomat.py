@@ -1,5 +1,6 @@
 from authentication import check_user, create_user, get_user
 from datetime import datetime
+import sepa
 import database as db
 
 class NotAuthenticatedError(Exception):
@@ -77,6 +78,27 @@ class matomat(object):
 	@require_auth
 	def pay(self,amount):
 		p=db.Pay(user=self._user,amount=int(amount))
+		self.session.add(p)
+		self.session.commit()
+
+	@require_auth
+	def get_sepa_file(self,year,month):
+		if not self._user.right_accountant:
+			raise NotAuthenticatedError('Need Accountant right')
+		time0=datetime(year,month,1)
+		month+=1
+		if month>12:
+			month-=12
+			year+=1
+		time1=datetime(year,month,1)
+		data=session.query(db.PaySepa).filter(db.PaySepa.time>=time0, db.PaySepa.time<time1).all()
+		return sepa.create_debit_file(data)
+	
+	@require_auth
+	def paysepa(self,amount):
+		if self._user.iban is None:
+			raise EnvironmentError('No IBAN available for user {}')
+		p=db.PaySepa(user=self._user,amount=int(amount))
 		self.session.add(p)
 		self.session.commit()
 	
