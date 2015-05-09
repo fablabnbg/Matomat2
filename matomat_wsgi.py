@@ -77,6 +77,7 @@ class matomat_wsgi(object):
 	def do_POST(self):
 		try:
 			if self.cmd=='pay': return self.pay()
+			elif self.cmd=='paysepa': return self.paysepa()
 			elif self.cmd=='buy': return self.buy()
 			elif self.cmd=='undo': return self.undo()
 			elif self.cmd=='user': return self.user()
@@ -149,6 +150,15 @@ class matomat_wsgi(object):
 		except ValueError:
 			return self.bad_request()
 		self.matomat.pay(amount)
+		return self.created()
+
+	def paysepa(self):
+		data=self.load_json()
+		try:
+			amount=int(data)
+		except ValueError:
+			return self.bad_request()
+		self.matomat.paysepa(amount)
 		return self.created()
 
 	def buy(self):
