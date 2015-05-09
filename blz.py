@@ -4,11 +4,8 @@ def check_iban(iban):
 	iban=iban.replace(' ','')
 	if iban[:2].upper()!='DE':
 		raise ValueError('Only german IBANs are supported')
-	r=str(98-int(iban[4:]+'131400')%97)
-	if len(r)<2:
-		r='0'+r
-	return iban[2:4]==r
-
+	r=int(iban[4:]+'1314'+iban[2:4])%97
+	return r==1
 
 def from_iban(iban):
 	iban=iban.replace(' ','')
