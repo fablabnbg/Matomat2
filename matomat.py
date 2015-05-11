@@ -1,6 +1,7 @@
 from authentication import check_user, create_user, get_user
 from datetime import datetime
 import database as db
+import config
 
 class NotAuthenticatedError(Exception):
 	pass
