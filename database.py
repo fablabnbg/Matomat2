@@ -11,9 +11,7 @@ class User(Base):
 	name=Column(String(32),unique=True)
 	password=Column(String(128))
 	creator=Column(Integer,nullable=True)
-	iban=Column(String(34),nullable=True)
-	max_sepa_amount=Column(Integer, default=5000)
-	right_accountant=Column(Boolean, default=False)
+	external_id=Column(String(32),nullable=True)
 
 class Item(Base):
 	__tablename__='items'
@@ -39,8 +37,8 @@ class Pay(Base):
 	time=Column(DateTime, default=func.now())
 	user=relationship('User')
 
-class PaySepa(Base):
-	__tablename__='payssepa'
+class PayExternal(Base):
+	__tablename__='paysexternal'
 	id=Column(Integer,primary_key=True)
 	user_id=Column(Integer,ForeignKey('users.id'))
 	amount=Column(Integer)

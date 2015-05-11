@@ -42,8 +42,8 @@ class matomat(object):
 		money_out=sum((x.amount for x in self.session.query(db.Sale).filter(db.Sale.user==self._user)))
 		transfers_in=sum((x.amount for x in self.session.query(db.Transfer).filter(db.Transfer.recipient==self._user)))
 		transfers_out=sum((x.amount for x in self.session.query(db.Transfer).filter(db.Transfer.sender==self._user)))
-		sepa_in=sum((x.amount for x in self.session.query(db.PaySepa).filter(db.PaySepa.user==self._user)))
-		res=money_in-money_out+transfers_in-transfers_out+sepa_in
+		external_in=sum((x.amount for x in self.session.query(db.PayExternal).filter(db.PayExternal.user==self._user)))
+		res=money_in-money_out+transfers_in-transfers_out+external_in
 		return res
 
 	@require_auth
@@ -52,10 +52,10 @@ class matomat(object):
 		money_out=self.session.query(db.Sale).filter(db.Sale.user==self._user).all()
 		transfers_in=self.session.query(db.Transfer).filter(db.Transfer.recipient==self._user).all()
 		transfers_out=self.session.query(db.Transfer).filter(db.Transfer.sender==self._user).all()
-		sepa_in=self.session.query(db.PaySepa).filter(db.PaySepa.user==self._user).all()
+		external_in=self.session.query(db.PayExternal).filter(db.PayExternal.user==self._user).all()
 		for m in transfers_out:
 			m.amount*=-1
-		money=sorted(money_in+money_out+transfers_in+transfers_out+sepa_in,key=lambda x:x.time,reverse=True)
+		money=sorted(money_in+money_out+transfers_in+transfers_out+external_in,key=lambda x:x.time,reverse=True)
 		data=[]
 		for m in money:
 			d={"amount":m.amount,"time":m.time.isoformat()}
@@ -84,23 +84,12 @@ class matomat(object):
 		self.session.commit()
 
 	@require_auth
-	def get_sepa_file(self,year,month):
-		if not self._user.right_accountant:
-			raise NotAuthenticatedError('Need Accountant right')
-		time0=datetime(year,month,1)
-		month+=1
-		if month>12:
-			month-=12
-			year+=1
-		time1=datetime(year,month,1)
-		data=self.session.query(db.PaySepa).filter(db.PaySepa.time>=time0, db.PaySepa.time<time1).all()
-		return sepa.create_debit_file(data)
-	
-	@require_auth
-	def paysepa(self,amount):
-		if self._user.iban is None:
-			raise EnvironmentError('No IBAN available for user {}')
-		p=db.PaySepa(user=self._user,amount=int(amount))
+	def payexternal(self,amount):
+		if self._user.external_id is None:
+			raise EnvironmentError('No payment processor id available for user {}')
+		if not config.payment_processor.debit(self._user.external_id,amount,'Matomat'):
+			raise EnvironmentError('Payment failed')
+		p=db.PayExternal(user=self._user,amount=int(amount))
 		self.session.add(p)
 		self.session.commit()
 	
