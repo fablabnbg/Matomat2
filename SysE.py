@@ -14,7 +14,7 @@ class SysE(object):
 		self.key=bytes(key)
 
 	def do_communication(self,data):
-		response=urlopen(self.url,data=urlencode(data),context=ssl.create_default_context())
+		response=urlopen(self.url,data=urlencode(data).encode('ascii'),context=ssl.create_default_context())
 		res=200<=response.status<300
 		response.close()
 		return res
