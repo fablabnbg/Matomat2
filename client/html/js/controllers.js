@@ -119,8 +119,8 @@ matomatControllers.controller('balanceCtrl', ['$scope', '$http', '$location', 'a
 					$scope.message="Einzahlen fehlgeschlagen";
 				});
 			};
-			$scope.paysepa=function(amount){
-				var url="api/"+$scope.user+"/paysepa";
+			$scope.payexternal=function(amount){
+				var url="api/"+$scope.user+"/payexternal";
 				$http.post(url,amount*100,{headers:{pass:$scope.pass}})
 				.success(function(data){
 					$scope.message=""+amount+" EUR per Lastschrift eingezahlt";
