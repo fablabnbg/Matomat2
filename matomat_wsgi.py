@@ -77,7 +77,7 @@ class matomat_wsgi(object):
 	def do_POST(self):
 		try:
 			if self.cmd=='pay': return self.pay()
-			elif self.cmd=='payexternal': return self.paysepa()
+			elif self.cmd=='payexternal': return self.payexternal()
 			elif self.cmd=='buy': return self.buy()
 			elif self.cmd=='undo': return self.undo()
 			elif self.cmd=='user': return self.user()

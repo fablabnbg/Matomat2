@@ -1,6 +1,5 @@
 from authentication import check_user, create_user, get_user
 from datetime import datetime
-import sepa
 import database as db
 
 class NotAuthenticatedError(Exception):
