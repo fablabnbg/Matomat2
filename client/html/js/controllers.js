@@ -110,7 +110,7 @@ matomatControllers.controller('balanceCtrl', ['$scope', '$http', '$location', 'a
 			$scope.pass=authenticator.pass;
 			$scope.pay=function(amount){
 				var url="api/"+$scope.user+"/pay";
-				$http.post(url,amount*100,{headers:{pass:$scope.pass}})
+				$http.post(url,Math.round(amount*100),{headers:{pass:$scope.pass}})
 				.success(function(data){
 					$scope.message=""+amount+"EUR eingezahlt";
 					$scope.loadBalance();
