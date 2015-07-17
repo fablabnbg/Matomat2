@@ -1,4 +1,4 @@
-	<!--Hallo {{user}}-->
+<!--Hallo {{user}}-->
 <div class="container">
 	<h3><span class="glyphicon glyphicon-home" /> Quickbuy</h3>
 	<div class="input-group">
@@ -11,31 +11,33 @@
 	<div>
 		Balance: {{balance/100}} 
 		<br/>
-		Geld &uuml;berweisen<br/>
-		<span class="glyphicon glyphicon-search"></span>
-
-		<div class="input-group">
-			<span class="input-group-addon">An:</span>
-	    		<input type="text" class="form-control" placeholder="Empfänger" ng-model="recipient">
+		<div>
+			<input ng-model="amount" size="5"/>
+			<a href="" ng-click="pay(amount)" class="btn btn-default">einzahlen</a>
+			<a href="" ng-click="pay(10)" class="btn btn-default">10</a>
+			<a href="" ng-click="pay(20)" class="btn btn-default">20</a>
+			<a href="" ng-click="pay(50)" class="btn btn-default">50</a>
 		</div>
-                <div class="input-group">
-                        <span class="input-group-addon">Betrag:</span>
-                        <input type="text" class="form-control" placeholder="Betrag" ng-model="trans_amount">
-                </div>
-		<a href="" ng-click="transfer(trans_amount,recipient)" class="btn btn-default">&Uuml;berweisen</a>
+		<div>
+			Geld &uuml;berweisen<br/>
+			<span class="glyphicon glyphicon-search"></span>
+
+			<div class="input-group">
+				<span class="input-group-addon">An:</span>
+				<input type="text" class="form-control" placeholder="Empfänger" ng-model="recipient">
+			</div>
+			<div class="input-group">
+				<span class="input-group-addon">Betrag:</span>
+				<input type="text" class="form-control" placeholder="Betrag" ng-model="trans_amount">
+			</div>
+			<a href="" ng-click="transfer(trans_amount,recipient)" class="btn btn-default">&Uuml;berweisen</a>
+		</div>
 	</div>
         <h3><span class="glyphicon glyphicon-user"/> Administration</h3>	
 	<a href="#/details" class="btn btn-default">Detailansicht</a>
 	<a href="#/user" class="btn btn-default">Neuer Benutzer/Passwort &auml;ndern</a>
 	<div>
-		<input ng-model="amount" size="5"/>
-		<a href="" ng-click="pay(amount)" class="btn btn-default">einzahlen</a>
-		<a href="" ng-click="pay(10)" class="btn btn-default">10</a>
-		<a href="" ng-click="pay(20)" class="btn btn-default">20</a>
-		<a href="" ng-click="pay(50)" class="btn btn-default">50</a>
 	        <a href="" ng-click="undo(50)" class="btn btn-default">undo</a>
 	</div>
 	<a href="#/items" class="btn btn-default">Produkte bearbeiten</a>
-
 </div>
-
