@@ -22,12 +22,12 @@ def get_user(Session,username):
 	return user[0]
 
 def auth_ssh(Session,user,password):
-	expiry_date,signature=password.split(b'$',1)
-	expiry_date_dt=dateutil.parser.parse(expiry_date.decode('ascii'))
+	expiry_date,signature=password.split('$',1)
+	expiry_date_dt=dateutil.parser.parse(expiry_date)
 	if datetime.now()>expiry_date_dt:
 		return None
-	signature=base64.decodebytes(signature)
-	expiry_hash=SHA.new(expiry_date)
+	signature=base64.decodebytes(signature.encode('ascii'))
+	expiry_hash=SHA.new(expiry_date.encode('ascii'))
 	key=user.public_key
 	if not key:
 		return None
