@@ -11,6 +11,7 @@ class User(Base):
 	name=Column(String(32),unique=True)
 	password=Column(String(128))
 	creator=Column(Integer,nullable=True)
+	public_key=Column(String(1000),nullable=True)
 
 class Item(Base):
 	__tablename__='items'

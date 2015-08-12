@@ -2,6 +2,12 @@ import random
 import hashlib
 from database import User
 from sqlalchemy import func
+from Crypto.PublicKey import RSA
+from Crypto.Signature import PKCS1_v1_5
+from Crypto.Hash import SHA
+from datetime import datetime
+import dateutil.parser
+import base64
 
 def hashpw(salt,password):
 	h=hashlib.sha1()
@@ -15,12 +21,29 @@ def get_user(Session,username):
 		return None
 	return user[0]
 
+def auth_ssh(Session,user,password):
+	expiry_date,signature=password.split(b'$')
+	expiry_date_dt=dateutil.parser.parse(expiry_date)
+	if datetime.now()>expiry_date_dt:
+		return None
+	signature=base64.decodebytes(signature)
+	expiry_hash=SHA.new(expiry_date)
+
+	key=RSA.importKey(user.public_key)
+	pkcs=PKCS1_v1_5.new(key)
+
+	if self.pkcs.verify(expiry_hash,signature):
+		return user
+	return None
+
 def check_user(Session,username,password):
 	if password is None:
 		return None
 	user=get_user(Session,username)
 	if user is None:
 		return None
+	if len(password)>100: #assume ssh authentication if password is very long
+		return auth_ssh(Session,user,password)
 	salt_hashed=user.password.split('$',1)
 	if len(salt_hashed)!=2:
 		return None
