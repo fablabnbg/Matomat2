@@ -4,6 +4,7 @@ sys.path.append(os.path.dirname(__file__))
 import config
 from matomat import NotAuthenticatedError, matomat_factory
 import json
+from datetime import datetime
 
 class matomat_wsgi(object):
 	def __init__(self,matomat):
@@ -63,6 +64,7 @@ class matomat_wsgi(object):
 			elif self.cmd=='items':return self.items()
 			elif self.cmd=='details':return self.details()
 			elif self.cmd=='user':return self.user_get()
+			elif self.cmd=='date':return self.date_get()
 			return self.not_found()
 		except NotAuthenticatedError:
 			return self.forbidden()
@@ -104,6 +106,9 @@ class matomat_wsgi(object):
 
 	def user_get(self):
 		return self.json_response({'username':self.matomat.username()})
+
+	def date_get(self):
+		return self.json_response({'date:':datetime.now().isoformat()})
 
 	def items_put(self):
 		try:
