@@ -26,5 +26,5 @@ def strip_app(environ,start_response):
 	return matomat_wsgi.application(environ,start_response)
 
 if __name__=='__main__':
-	s = make_server('', 8000, strip_app)
+	s = make_server('', 8002, strip_app)
 	s.serve_forever()
