@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, func
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, func, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy import create_engine
@@ -11,7 +11,7 @@ class User(Base):
 	name=Column(String(32),unique=True)
 	password=Column(String(128))
 	creator=Column(Integer,nullable=True)
-	public_key=Column(String(1000),nullable=True)
+	public_key=Column(Text(1000),nullable=True)
 
 class Item(Base):
 	__tablename__='items'
