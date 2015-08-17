@@ -18,6 +18,8 @@ class Matomat_client:
 		headers=dict()
 		if not self.password is None:
 			headers['pass']=self.password
+		if isinstance(post_data,str):
+			post_data=post_data.encode('ascii')
 		req=request.Request(url,data=post_data,headers=headers)
 		res=request.urlopen(req)
 		data=None
@@ -27,7 +29,7 @@ class Matomat_client:
 
 	def change_auth(self,password=None,public_key=None):
 		data={'username':self.username,'password':password,'public_key':public_key}
-		jdata=json.dumps(data).encode('ascii')
+		jdata=json.dumps(data)
 		return self.query('user',post_data=jdata)
 
 	def lookup(self,key):
