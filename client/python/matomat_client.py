@@ -22,10 +22,10 @@ class Matomat_client:
 			post_data=post_data.encode('ascii')
 		req=request.Request(url,data=post_data,headers=headers)
 		res=request.urlopen(req)
-		data=None
+		data=res.readall().decode('ascii')
 		if res.status==request.http.client.OK:
-			data=json.loads(res.readall().decode('ascii'))
-		return data
+			data=json.loads(data)
+		return res.status,data
 
 	def change_auth(self,password=None,public_key=None):
 		data={'username':self.username,'password':password,'public_key':public_key}
@@ -41,4 +41,13 @@ class Matomat_client:
 	def get_date(self):
 		data=self.query('date')
 		return dateutil.parser.parse(data['date'])
+
+	def balance(self):
+		return self.query('balance')
+
+	def pay(self,amount):
+		return self.query('pay',post_data=json.dumps(amount))
+
+	def buy(self,item_id):
+		return self.query('buy',post_data=json.dumps(item_id))
 
