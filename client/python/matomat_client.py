@@ -14,7 +14,7 @@ class Matomat_client:
 			url+=self.username+'/'
 		url+=endpoint
 		if not get_data is None:
-			url+='?'+parse.urlencode(data)
+			url+='?'+parse.urlencode(get_data)
 		headers=dict()
 		if not self.password is None:
 			headers['pass']=self.password
