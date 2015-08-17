@@ -33,7 +33,10 @@ class Matomat_client:
 		return self.query('user',post_data=jdata)
 
 	def lookup(self,key):
-		return self.query('user',get_data={'key':key})
+		status,resp=self.query('user',get_data={'key':key})
+		if status!=request.http.client.OK:
+			return []
+		return resp['username']
 
 	def get_items(self):
 		return self.query('items')
