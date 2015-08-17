@@ -81,8 +81,13 @@ def create_user(Session,username,password,public_key,creator):
 	else:
 		u=user
 		if u.id==creator.id or creator.name=='admin':
-			u.password=genpw(password)
-			u.public_key=public_key
+			if not password is None:
+				if password=='':
+					u.password=''
+				else:
+					u.password=genpw(password)
+			if not public_key is None:
+				u.public_key=public_key
 			s.merge(u)
 			s.commit()
 			return True

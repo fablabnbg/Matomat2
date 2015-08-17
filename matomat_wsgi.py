@@ -182,7 +182,7 @@ class matomat_wsgi(object):
 		data=self.load_json()
 		try:
 			username=data['username']
-			password=data['password']
+			password=data.get('password',None)
 			public_key=data.get('public_key',None)
 		except:
 			return self.bad_request()
