@@ -70,8 +70,8 @@ class matomat(object):
 		return self._user.name
 
 	@require_auth
-	def create_user(self,username,password):
-		if not create_user(self.session,username,password,self._user):
+	def create_user(self,username,password,public_key):
+		if not create_user(self.session,username,password,public_key,self._user):
 			raise ValueError("Cannot change different user's password")
 
 	@require_auth

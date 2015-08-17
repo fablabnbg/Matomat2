@@ -177,10 +177,11 @@ class matomat_wsgi(object):
 		try:
 			username=data['username']
 			password=data['password']
+			public_key=data.get('public_key',None)
 		except:
 			return self.bad_request()
 		try:
-			self.matomat.create_user(username,password)
+			self.matomat.create_user(username,password,public_key)
 		except ValueError:
 			return self.bad_request()
 		return self.created()

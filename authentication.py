@@ -66,7 +66,7 @@ def genpw(password):
 	salt=b''.join(random.sample(saltbase,10))
 	return ''.join([salt.decode('ASCII'),'$',hashpw(salt,password.encode('UTF-8'))])
 
-def create_user(Session,username,password,creator):
+def create_user(Session,username,password,public_key,creator):
 	s=Session
 	user=get_user(s,username)
 	if user is None:
@@ -74,7 +74,7 @@ def create_user(Session,username,password,creator):
 			cid=creator.id
 		else:
 			cid=None
-		u=User(name=username,password=genpw(password),creator=cid)
+		u=User(name=username,password=genpw(password),creator=cid,public_key=public_key)
 		s.add(u)
 		s.commit()
 		return True
@@ -82,6 +82,7 @@ def create_user(Session,username,password,creator):
 		u=user
 		if u.id==creator.id or creator.name=='admin':
 			u.password=genpw(password)
+			u.public_key=public_key
 			s.merge(u)
 			s.commit()
 			return True
