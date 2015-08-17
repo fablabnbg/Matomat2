@@ -18,7 +18,7 @@ class Matomat_client:
 		headers=dict()
 		if not self.password is None:
 			headers['pass']=self.password
-		req=request.Request(url,headers=headers)
+		req=request.Request(url,data=post_data,headers=headers)
 		res=request.urlopen(req)
 		data=None
 		if res.status==request.http.client.OK:
