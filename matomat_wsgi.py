@@ -5,6 +5,7 @@ import config
 from matomat import NotAuthenticatedError, matomat_factory
 import json
 from datetime import datetime
+from cgi import parse_qs
 
 class matomat_wsgi(object):
 	def __init__(self,matomat):
@@ -105,10 +106,15 @@ class matomat_wsgi(object):
 		return self.json_response(self.matomat.details())
 
 	def user_get(self):
-		return self.json_response({'username':self.matomat.username()})
+		qs=parse_qs(self.environ['QUERY_STRING'])
+		if 'key' in qs:
+			username=self.matomat.lookup_user(qs['key'][0])
+		else:
+			username=self.matomat.username()
+		return self.json_response({'username':username})
 
 	def date_get(self):
-		return self.json_response({'date:':datetime.now().isoformat()})
+		return self.json_response({'date':datetime.now().isoformat()})
 
 	def items_put(self):
 		try:

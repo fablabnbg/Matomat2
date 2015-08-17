@@ -1,5 +1,6 @@
 from authentication import check_user, create_user, get_user
 from datetime import datetime
+from functools import reduce
 import database as db
 
 class NotAuthenticatedError(Exception):
@@ -133,6 +134,10 @@ class matomat(object):
 		return item
 
 	def lookup_user(self,user_id):
+		if type(user_id)==str:
+			user_id=user_id.rstrip()
+			return reduce(lambda x,y:x+y,self.session.query(db.User).filter(db.User.public_key==user_id).values('name'))
+			return [x.name for x in self.session.query(db.User).filter(db.User.public_key==user_id).all()]
 		user=self.session.query(db.User).filter(db.User.id==user_id).one()
 		return user
 
