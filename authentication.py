@@ -26,7 +26,7 @@ def auth_ssh(Session,user,password):
 	expiry_date_dt=dateutil.parser.parse(expiry_date)
 	if datetime.now()>expiry_date_dt:
 		return None
-	signature=base64.decodebytes(signature.encode('ascii'))
+	signature=base64.standard_b64decode(signature.encode('ascii'))
 	expiry_hash=SHA.new(expiry_date.encode('ascii'))
 	key=user.public_key
 	if not key:
