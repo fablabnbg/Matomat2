@@ -33,7 +33,7 @@ def get_first_id(agent=None):
 		return None
 	key,comment=ids[0]
 	b64key=base64.standard_b64encode(key)
-	return b' '.join([b'ssh-rsa',b64key,comment])
+	return b' '.join([b'ssh-rsa',b64key,comment]).decode('ascii')
 
 class SSHagent:
 	SSH2_AGENTC_REQUEST_IDENTITIES=11

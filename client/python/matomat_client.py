@@ -25,8 +25,13 @@ class Matomat_client:
 			data=json.loads(res.readall().decode('ascii'))
 		return data
 
+	def change_auth(self,password=None,public_key=None):
+		data={'username':self.username,'password':password,'public_key':public_key}
+		jdata=json.dumps(data).encode('ascii')
+		return self.query('user',post_data=jdata)
+
 	def lookup(self,key):
-		return self.query('user',{'key':key})
+		return self.query('user',get_data={'key':key})
 
 	def get_items(self):
 		return self.query('items')
