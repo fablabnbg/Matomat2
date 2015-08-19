@@ -42,7 +42,9 @@ class Matomat_client:
 		return self.query('items')
 
 	def get_date(self):
-		data=self.query('date')
+		status,data=self.query('date')
+		if status!=200:
+			return None
 		return dateutil.parser.parse(data['date'])
 
 	def balance(self):
