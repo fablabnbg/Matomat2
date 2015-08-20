@@ -1,8 +1,10 @@
 import urllib.request
 import ssl
+import inspect
 
 def urlopen(req,cert):
-	if True: #TODO check if urlopen has context argument. Then no monkeypatch needed
+	args=inspect.getfullargspec(urllib.request.urlopen)
+	if not 'context' in args.args+args.kwonlyargs: #if urlopen has no context argument we monkey patch the SSLContext construction
 		orig_context=ssl.SSLContext
 		ssl.SSLContext=Checked_context_factory(cert)
 		try:
