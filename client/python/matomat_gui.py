@@ -88,7 +88,6 @@ class Main_gui(tk.Frame):
 	def _refresh(self):
 		self.refresh_balance()
 		self.refresh_token()
-		print(self.time_left)
 		self.after(5000,self._refresh)
 
 	def refresh_items(self):
