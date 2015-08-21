@@ -26,6 +26,9 @@ class matomat(object):
 		self._user=None
 		self.session=dbsession
 
+	def close(self):
+		self.session.close()
+
 	def is_auth(self):
 		return not self._user is None
 
