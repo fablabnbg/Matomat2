@@ -56,7 +56,10 @@ class Matomat_client:
 		return resp['username']
 
 	def get_items(self):
-		return self.query('items')
+		status,res=self.query('items')
+		if status!=200:
+			return None
+		return res
 
 	def get_date(self):
 		status,data=self.query('date')
@@ -65,11 +68,17 @@ class Matomat_client:
 		return dateutil.parser.parse(data['date'])
 
 	def balance(self):
-		return self.query('balance')
+		status,res=self.query('balance')
+		if status!=200:
+			return None
+		return res
 
 	def pay(self,amount):
 		return self.query('pay',post_data=json.dumps(amount))
 
 	def buy(self,item_id):
 		return self.query('buy',post_data=json.dumps(item_id))
+
+	def undo(self):
+		return self.query('undo',post_data=json.dumps('dummy'))
 
