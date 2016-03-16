@@ -35,6 +35,7 @@ class matomat_wsgi(object):
 
 	def json_response(self,data):
 		self.start_response('200 OK',[("Content-type", "application/json"),("Cache-Control", "no-cache")])
+		return [json.dumps(data)]
 		return [json.dumps(data).encode('UTF-8')]
 
 	def init(self):
@@ -43,7 +44,10 @@ class matomat_wsgi(object):
 		if len(parts)>1:
 			password=self.environ.get('HTTP_PASS',None)
 			self.matomat.auth(parts.pop(0),password)
-		cmd=parts.pop(0)
+		if len(parts):
+			cmd=parts.pop(0)
+		else:
+			cmd=None
 		return (cmd,parts)
 
 	def load_json(self):
