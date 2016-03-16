@@ -1,0 +1,12 @@
+RewriteBase /
+RewriteEngine on
+RewriteCond %{HTTPS} !=on
+RewriteCond %{ENV:HTTPS} !=on
+RewriteRule .* https://%{SERVER_NAME}%{REQUEST_URI} [R=301,L]
+
+Options +ExecCGI
+AddHandler fcgid-script .fcgi
+RewriteCond %{REQUEST_URI} !^/api/matomat_fcgi.py.fcgi
+RewriteRule ^(.*)$ /api/matomat_fcgi.py.fcgi/$1 [L]
+#RewriteCond %{REQUEST_URI} !^/api/test.fcgi
+#RewriteRule ^(.*)$ /api/test.fcgi/$1 [L]
