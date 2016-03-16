@@ -212,16 +212,19 @@ class matomat_wsgi(object):
 		return self.created()
 
 	def __call__(self,environ,start_response):
-		self.environ=environ
-		self.start_response=start_response
-		self.method=environ['REQUEST_METHOD']
-		self.path=environ['PATH_INFO']
-		self.cmd,self.arg=self.init()
-		if self.method=='GET': return self.do_GET()
-		if self.method=='PUT': return self.do_PUT()
-		if self.method=='POST': return self.do_POST()
-		if self.method=='DELETE': return self.do_DELETE()
-		return self.bad_request()
+		try:
+			self.environ=environ
+			self.start_response=start_response
+			self.method=environ['REQUEST_METHOD']
+			self.path=environ['PATH_INFO']
+			self.cmd,self.arg=self.init()
+			if self.method=='GET': return self.do_GET()
+			if self.method=='PUT': return self.do_PUT()
+			if self.method=='POST': return self.do_POST()
+			if self.method=='DELETE': return self.do_DELETE()
+			return self.bad_request()
+		finally:
+			self.matomat.session.close()
 
 def application(environ,start_response):
 	app=matomat_wsgi(matomat_factory(config.dbengine).get())
