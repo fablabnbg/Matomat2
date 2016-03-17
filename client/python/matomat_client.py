@@ -39,7 +39,7 @@ class Matomat_client:
 			post_data=post_data.encode('ascii')
 		req=request.Request(url,data=post_data,headers=headers)
 		res=checked_ssl.urlopen(req,self.cert)
-		data=res.readall().decode('ascii')
+		data=res.read().decode('ascii')
 		if res.status==request.http.client.OK:
 			data=json.loads(data)
 		return res.status,data
