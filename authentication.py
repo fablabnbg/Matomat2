@@ -2,6 +2,12 @@ import random
 import hashlib
 from database import User
 from sqlalchemy import func
+from Crypto.PublicKey import RSA
+from Crypto.Signature import PKCS1_v1_5
+from Crypto.Hash import SHA
+from datetime import datetime
+import dateutil.parser
+import base64
 
 def hashpw(salt,password):
 	h=hashlib.sha1()
@@ -15,12 +21,34 @@ def get_user(Session,username):
 		return None
 	return user[0]
 
+def auth_ssh(Session,user,password):
+	expiry_date,signature=password.split('$',1)
+	expiry_date_dt=dateutil.parser.parse(expiry_date)
+	if datetime.now()>expiry_date_dt:
+		return None
+	signature=base64.standard_b64decode(signature.encode('ascii'))
+	expiry_hash=SHA.new(expiry_date.encode('ascii'))
+	key=user.public_key
+	if not key:
+		return None
+	try:
+		key=RSA.importKey(key)
+	except ValueError:
+		return None
+	pkcs=PKCS1_v1_5.new(key)
+
+	if pkcs.verify(expiry_hash,signature):
+		return user
+	return None
+
 def check_user(Session,username,password):
 	if password is None:
 		return None
 	user=get_user(Session,username)
 	if user is None:
 		return None
+	if len(password)>100: #assume ssh authentication if password is very long
+		return auth_ssh(Session,user,password)
 	salt_hashed=user.password.split('$',1)
 	if len(salt_hashed)!=2:
 		return None
@@ -38,7 +66,7 @@ def genpw(password):
 	salt=b''.join(random.sample(saltbase,10))
 	return ''.join([salt.decode('ASCII'),'$',hashpw(salt,password.encode('UTF-8'))])
 
-def create_user(Session,username,password,creator):
+def create_user(Session,username,password,public_key,creator):
 	s=Session
 	user=get_user(s,username)
 	if user is None:
@@ -46,14 +74,20 @@ def create_user(Session,username,password,creator):
 			cid=creator.id
 		else:
 			cid=None
-		u=User(name=username,password=genpw(password),creator=cid)
+		u=User(name=username,password=genpw(password),creator=cid,public_key=public_key)
 		s.add(u)
 		s.commit()
 		return True
 	else:
 		u=user
 		if u.id==creator.id or creator.name=='admin':
-			u.password=genpw(password)
+			if not password is None:
+				if password=='':
+					u.password=''
+				else:
+					u.password=genpw(password)
+			if not public_key is None:
+				u.public_key=public_key
 			s.merge(u)
 			s.commit()
 			return True

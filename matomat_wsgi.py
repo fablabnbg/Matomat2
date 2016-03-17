@@ -4,6 +4,8 @@ sys.path.append(os.path.dirname(__file__))
 import config
 from matomat import NotAuthenticatedError, matomat_factory
 import json
+from datetime import datetime
+from cgi import parse_qs
 
 class matomat_wsgi(object):
 	def __init__(self,matomat):
@@ -67,6 +69,7 @@ class matomat_wsgi(object):
 			elif self.cmd=='items':return self.items()
 			elif self.cmd=='details':return self.details()
 			elif self.cmd=='user':return self.user_get()
+			elif self.cmd=='date':return self.date_get()
 			return self.not_found()
 		except NotAuthenticatedError:
 			return self.forbidden()
@@ -108,7 +111,15 @@ class matomat_wsgi(object):
 		return self.json_response(self.matomat.details())
 
 	def user_get(self):
-		return self.json_response({'username':self.matomat.username()})
+		qs=parse_qs(self.environ['QUERY_STRING'])
+		if 'key' in qs:
+			username=self.matomat.lookup_user(qs['key'][0])
+		else:
+			username=self.matomat.username()
+		return self.json_response({'username':username})
+
+	def date_get(self):
+		return self.json_response({'date':datetime.now().isoformat()})
 
 	def items_put(self):
 		try:
@@ -189,11 +200,12 @@ class matomat_wsgi(object):
 		data=self.load_json()
 		try:
 			username=data['username']
-			password=data['password']
+			password=data.get('password',None)
+			public_key=data.get('public_key',None)
 		except:
 			return self.bad_request()
 		try:
-			self.matomat.create_user(username,password)
+			self.matomat.create_user(username,password,public_key)
 		except ValueError:
 			return self.bad_request()
 		return self.created()
@@ -224,7 +236,7 @@ class matomat_wsgi(object):
 			if self.method=='DELETE': return self.do_DELETE()
 			return self.bad_request()
 		finally:
-			self.matomat.session.close()
+			self.matomat.close()
 
 def application(environ,start_response):
 	app=matomat_wsgi(matomat_factory(config.dbengine).get())
