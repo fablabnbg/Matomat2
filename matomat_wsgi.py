@@ -241,3 +241,10 @@ class matomat_wsgi(object):
 def application(environ,start_response):
 	app=matomat_wsgi(matomat_factory(config.dbengine).get())
 	return app(environ,start_response)
+
+class application_single_db:
+	def __init__(self):
+		self.app=matomat_wsgi(matomat_factory(config.dbengine).get())
+
+	def __call__(self,environ,start_response):
+		return self.app(environ,start_response)
