@@ -2,10 +2,12 @@ import os
 import sys
 sys.path.append(os.path.dirname(__file__))
 import config
-from matomat import NotAuthenticatedError, matomat_factory
+from matomat import NotAuthenticatedError, matomat_factory, matomat
+import database as db
 import json
 from datetime import datetime
 from cgi import parse_qs
+from sqlalchemy.orm import scoped_session
 
 class matomat_wsgi(object):
 	def __init__(self,matomat):
@@ -244,7 +246,11 @@ def application(environ,start_response):
 
 class application_single_db:
 	def __init__(self):
-		self.app=matomat_wsgi(matomat_factory(config.dbengine).get())
+		self.Session=scoped_session(db.create_sessionmaker(config.dbengine))
 
 	def __call__(self,environ,start_response):
-		return self.app(environ,start_response)
+		try:
+			self.Session()
+			return matomat_wsgi(matomat(self.Session))(environ,start_response)
+		finally:
+			self.Session.remove()
