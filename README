@@ -3,7 +3,7 @@ Configuration
 Copy 'config.py.ex' to 'config.py' and adjust the 'dbengine' variable to your local configuration.
 
 Place the contents of client/html/ in www-root make sure you also copy .htaccess
-Place *.py and .htaccess in www-root/api
+Place *.py, *.fcgi and .htaccess in www-root/api
 Install neccessary python libraries:
 pip3 install --user request pytz sqlalchemy flipflop mysqlclient python-dateutil pycrypto
 
