@@ -57,8 +57,7 @@ class matomat(object):
 		transfers_in=self.session.query(db.Transfer).filter(db.Transfer.recipient==self._user).all()
 		transfers_out=self.session.query(db.Transfer).filter(db.Transfer.sender==self._user).all()
 		external_in=self.session.query(db.PayExternal).filter(db.PayExternal.user==self._user).all()
-		for m in transfers_out:
-			m.amount*=-1
+
 		money=sorted(money_in+money_out+transfers_in+transfers_out+external_in,key=lambda x:x.time,reverse=True)
 		data=[]
 		for m in money:
@@ -67,6 +66,8 @@ class matomat(object):
 				d["amount"]*=-1
 				d["Item"]=m.item.name
 			if isinstance(m,db.Transfer):
+				if m.sender==self._user:
+					d["amount"]*=-1
 				d["sender"]=m.sender.name
 				d["recipient"]=m.recipient.name
 			data.append(d)
