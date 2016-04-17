@@ -43,11 +43,12 @@ class matomat(object):
 
 	@require_auth
 	def balance(self):
-		money_in=int(self.session.query(func.sum(db.Pay.amount)).filter(db.Pay.user==self._user).scalar())
-		money_out=int(self.session.query(func.sum(db.Sale.amount)).filter(db.Sale.user==self._user).scalar())
-		transfers_in=int(self.session.query(func.sum(db.Transfer.amount)).filter(db.Transfer.recipient==self._user).scalar())
-		transfers_out=int(self.session.query(func.sum(db.Transfer.amount)).filter(db.Transfer.sender==self._user).scalar())
-		external_in=int(self.session.query(func.sum(db.PayExternal)).filter(db.PayExternal.user==self._user).scalar())
+		#empty tables return None instead of 0. So replace Nones with 0s
+		money_in=int(self.session.query(func.sum(db.Pay.amount)).filter(db.Pay.user==self._user).scalar() or 0)
+		money_out=int(self.session.query(func.sum(db.Sale.amount)).filter(db.Sale.user==self._user).scalar() or 0)
+		transfers_in=int(self.session.query(func.sum(db.Transfer.amount)).filter(db.Transfer.recipient==self._user).scalar() or 0)
+		transfers_out=int(self.session.query(func.sum(db.Transfer.amount)).filter(db.Transfer.sender==self._user).scalar() or 0)
+		external_in=int(self.session.query(func.sum(db.PayExternal)).filter(db.PayExternal.user==self._user).scalar() or 0)
 		res=money_in-money_out+transfers_in-transfers_out+external_in
 		return res
 
