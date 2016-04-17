@@ -1,6 +1,7 @@
 from authentication import check_user, create_user, get_user
 from datetime import datetime
 from functools import reduce
+from sqlalchemy.sql import func
 import database as db
 import config
 
@@ -42,11 +43,11 @@ class matomat(object):
 
 	@require_auth
 	def balance(self):
-		money_in=sum((x.amount for x in self.session.query(db.Pay).filter(db.Pay.user==self._user)))
-		money_out=sum((x.amount for x in self.session.query(db.Sale).filter(db.Sale.user==self._user)))
-		transfers_in=sum((x.amount for x in self.session.query(db.Transfer).filter(db.Transfer.recipient==self._user)))
-		transfers_out=sum((x.amount for x in self.session.query(db.Transfer).filter(db.Transfer.sender==self._user)))
-		external_in=sum((x.amount for x in self.session.query(db.PayExternal).filter(db.PayExternal.user==self._user)))
+		money_in=int(self.session.query(func.sum(db.Pay.amount)).filter(db.Pay.user==self._user).scalar())
+		money_out=int(self.session.query(func.sum(db.Sale.amount)).filter(db.Sale.user==self._user).scalar())
+		transfers_in=int(self.session.query(func.sum(db.Transfer.amount)).filter(db.Transfer.recipient==self._user).scalar())
+		transfers_out=int(self.session.query(func.sum(db.Transfer.amount)).filter(db.Transfer.sender==self._user).scalar())
+		external_in=int(self.session.query(func.sum(db.PayExternal)).filter(db.PayExternal.user==self._user).scaler())
 		res=money_in-money_out+transfers_in-transfers_out+external_in
 		return res
 
