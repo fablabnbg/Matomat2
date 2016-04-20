@@ -41,6 +41,13 @@ class matomat(object):
 		self._user=user
 		return True
 
+	def total_balance(self):
+		money_in=int(self.session.query(func.sum(db.Pay.amount)).scalar() or 0)
+		money_out=int(self.session.query(func.sum(db.Sale.amount)).scalar() or 0)
+		external_in=int(self.session.query(func.sum(db.PayExternal)).scalar() or 0)
+		res=money_in-money_out+external_in
+		return res
+
 	@require_auth
 	def balance(self):
 		#empty tables return None instead of 0. So replace Nones with 0s
@@ -89,6 +96,8 @@ class matomat(object):
 		p=db.Pay(user=self._user,amount=int(amount))
 		self.session.add(p)
 		self.session.commit()
+		for plugin in config.plugins:
+			plugin.pay(self)
 
 	@require_auth
 	def payexternal(self,amount):
@@ -99,6 +108,8 @@ class matomat(object):
 		p=db.PayExternal(user=self._user,amount=int(amount))
 		self.session.add(p)
 		self.session.commit()
+		for plugin in config.plugins:
+			plugin.pay(self)
 	
 	@require_auth
 	def buy(self,item):
@@ -107,6 +118,8 @@ class matomat(object):
 		sale=db.Sale(user=self._user,item=item,amount=item.price)
 		self.session.add(sale)
 		self.session.commit()
+		for plugin in config.plugins:
+			plugin.sale(self)
 
 	@require_auth
 	def transfer(self,amount,to):
@@ -134,6 +147,8 @@ class matomat(object):
 		to_del=max(candidates,key=lambda x:x.time)
 		self.session.delete(to_del)
 		self.session.commit()
+		for plugin in config.plugins:
+			plugin.undo(self)
 
 	@require_auth
 	def add_item(self,name,price,id=None):
