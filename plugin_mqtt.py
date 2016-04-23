@@ -2,8 +2,10 @@ from plugin import Plugin
 import paho.mqtt.client as mqtt
 
 class Plugin_mqtt(Plugin):
-	def __init__(self,host,port,topic):
+	def __init__(self,host,port,topic,username=None,password=None):
 		self.mqttc = mqtt.Client(clean_session=True)
+		if username:
+			self.mqttc.username_pw_set(username,password)
 		self.mqttc.connect_async(host,port,60)
 		self.mqttc.loop_start()
 		self.topic=topic
