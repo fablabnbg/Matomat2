@@ -65,6 +65,9 @@ def check_user(Session,username,password):
 		passhash=salt+'$'+passhash
 		version=1
 	if passhash==hashpw(passhash,password,version):
+		if version!=PREFERED_HASH:
+			user.password=genpw(password)
+			Session.commit()
 		return user
 	return None
 
