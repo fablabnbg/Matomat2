@@ -8,12 +8,19 @@ from Crypto.Hash import SHA
 from datetime import datetime
 import dateutil.parser
 import base64
+import bcrypt
 
-def hashpw(salt,password):
-	h=hashlib.sha1()
-	h.update(salt)
-	h.update(password)
-	return h.hexdigest()
+def hashpw(salt,password,version):
+	if version==1:
+		salt,dummy=salt.split('$')
+		h=hashlib.sha1()
+		h.update(salt.encode('UTF-8'))
+		h.update(password.encode('UTF-8'))
+		return salt+'$'+h.hexdigest()
+	if version==2:
+		pass
+	raise ValueError('Unknown Hash Version "{}"'.format(version))
+	return b''
 
 def get_user(Session,username):
 	user=Session.query(User).filter(func.lower(User.name)==func.lower(username)).all()
@@ -49,22 +56,26 @@ def check_user(Session,username,password):
 		return None
 	if len(password)>100: #assume ssh authentication if password is very long
 		return auth_ssh(Session,user,password)
-	salt_hashed=user.password.split('$',1)
-	if len(salt_hashed)!=2:
-		return None
-	salt,hashed=salt_hashed
-	if hashed==hashpw(salt.encode('ASCII'),password.encode('UTF-8')):
+	version,passhash=user.password.split('$',1)
+	try:
+		version=int(version)
+	except ValueError:
+		salt=version
+		passhash=salt+'$'+passhash
+		version=1
+	if passhash==hashpw(passhash,password,version):
 		return user
 	return None
 
 def genpw(password):
 	saltbase=(
-		[bytes([x]) for x in range(ord('A'),ord('Z')+1)]+
-		[bytes([x]) for x in range(ord('a'),ord('z')+1)]+
-		[bytes([x]) for x in range(ord('0'),ord('9')+1)]
+		[chr(x) for x in range(ord('A'),ord('Z')+1)]+
+		[chr(x) for x in range(ord('a'),ord('z')+1)]+
+		[chr(x) for x in range(ord('0'),ord('9')+1)]
 		)
-	salt=b''.join(random.sample(saltbase,10))
-	return ''.join([salt.decode('ASCII'),'$',hashpw(salt,password.encode('UTF-8'))])
+	salt=''.join(random.sample(saltbase,10))
+	version=1
+	return '$'.join([str(version),hashpw(salt+'$',password,version)])
 
 def create_user(Session,username,password,public_key,creator):
 	s=Session
