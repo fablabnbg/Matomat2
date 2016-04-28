@@ -55,6 +55,7 @@ class test_auth(unittest.TestCase):
 		self.assertTrue(auth.create_user(self.s,'test','pass2',None,u))
 		u=auth.check_user(self.s,'test','pass2')
 		self.assertIsNotNone(u)
+		self.assertNotEqual(u.password,'PUQNajhroe$6068b411a6f27821dc9473b8a26b7813b22ebcd7')
 
 	def test_create_user_update_other(self):
 		u=auth.get_user(self.s,'test_1')
