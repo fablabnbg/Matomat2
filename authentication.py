@@ -10,6 +10,8 @@ import dateutil.parser
 import base64
 import bcrypt
 
+PREFERED_HASH=2
+
 def hashpw(salt,password,version):
 	if version==1:
 		salt,dummy=salt.split('$')
@@ -18,9 +20,8 @@ def hashpw(salt,password,version):
 		h.update(password.encode('UTF-8'))
 		return salt+'$'+h.hexdigest()
 	if version==2:
-		pass
+		return bcrypt.hashpw(password.encode('UTF-8'),salt.encode('UTF-8')).decode('UTF-8')
 	raise ValueError('Unknown Hash Version "{}"'.format(version))
-	return b''
 
 def get_user(Session,username):
 	user=Session.query(User).filter(func.lower(User.name)==func.lower(username)).all()
@@ -68,14 +69,8 @@ def check_user(Session,username,password):
 	return None
 
 def genpw(password):
-	saltbase=(
-		[chr(x) for x in range(ord('A'),ord('Z')+1)]+
-		[chr(x) for x in range(ord('a'),ord('z')+1)]+
-		[chr(x) for x in range(ord('0'),ord('9')+1)]
-		)
-	salt=''.join(random.sample(saltbase,10))
-	version=1
-	return '$'.join([str(version),hashpw(salt+'$',password,version)])
+	version=2
+	return '$'.join([str(version),hashpw(bcrypt.gensalt().decode('UTF-8'),password,version)])
 
 def create_user(Session,username,password,public_key,creator):
 	s=Session
