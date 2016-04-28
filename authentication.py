@@ -80,6 +80,7 @@ def create_user(Session,username,password,public_key,creator):
 		return True
 	else:
 		u=user
+		if not creator: return False
 		if u.id==creator.id or creator.name=='admin':
 			if not password is None:
 				if password=='':
