@@ -55,7 +55,7 @@ class matomat(object):
 		money_out=int(self.session.query(func.sum(db.Sale.amount)).filter(db.Sale.user==self._user).scalar() or 0)
 		transfers_in=int(self.session.query(func.sum(db.Transfer.amount)).filter(db.Transfer.recipient==self._user).scalar() or 0)
 		transfers_out=int(self.session.query(func.sum(db.Transfer.amount)).filter(db.Transfer.sender==self._user).scalar() or 0)
-		external_in=int(self.session.query(func.sum(db.PayExternal)).filter(db.PayExternal.user==self._user).scalar() or 0)
+		external_in=int(self.session.query(func.sum(db.PayExternal.amount)).filter(db.PayExternal.user==self._user).scalar() or 0)
 		res=money_in-money_out+transfers_in-transfers_out+external_in
 		return res
 
