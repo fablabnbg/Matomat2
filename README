@@ -11,3 +11,5 @@ pip3 install --user request pytz sqlalchemy flipflop mysqlclient python-dateutil
 Initialize database:
 python3 init.py
 
+
+Migration nach Github
