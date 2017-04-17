@@ -73,7 +73,10 @@ class matomat(object):
 			d={"amount":m.amount,"time":m.time.isoformat()}
 			if isinstance(m,db.Sale):
 				d["amount"]*=-1
-				d["Item"]=m.item.name
+				if m.item is not None:
+					d["Item"]=m.item.name
+				else:
+					d["Item"]='<<<Deleted Item>>>'
 			if isinstance(m,db.Transfer):
 				if m.sender==self._user:
 					d["amount"]*=-1
