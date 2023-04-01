@@ -22,6 +22,15 @@ def require_auth(fun):
 		return fun(self,*args,**kwargs)
 	return inner
 
+def require_admin(fun):
+	fun=require_auth(fun)
+	def inner(self,*args,**kwargs):
+		if not self._user.name=="admin":
+			raise NotAuthenticatedError('Not admin')
+		return fun(self,*args,**kwargs)
+	return inner
+
+
 
 class matomat(object):
 	def __init__(self, dbsession):
@@ -151,13 +160,13 @@ class matomat(object):
 		for plugin in config.plugins:
 			plugin.undo(self)
 
-	@require_auth
+	@require_admin
 	def add_item(self,name,price,id=None):
 		i=db.Item(id=id,name=name,price=price)
 		self.session.merge(i)
 		self.session.commit()
 
-	@require_auth
+	@require_admin
 	def delete_item(self,item):
 		if isinstance(item,int):
 			item=self.lookup_item(item)
